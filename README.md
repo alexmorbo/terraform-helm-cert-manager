@@ -105,7 +105,7 @@ module "cert_manager" {
 | Name | Version |
 |------|---------|
 | kubernetes | >= 2.0 |
-| helm | >= 2.0 |
+| helm | >= 2.16.0, < 3.0 |
 
 ## License
 
