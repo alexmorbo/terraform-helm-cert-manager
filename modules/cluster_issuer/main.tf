@@ -20,12 +20,10 @@ resource "kubernetes_secret" "cloudflare_token" {
   }
 }
 
-resource "kubectl_manifest" "self_signed_issuer" {
+resource "kubernetes_manifest" "self_signed_issuer" {
   count = var.type == "self-signed" ? 1 : 0
 
-  validate_schema = false
-
-  yaml_body = yamlencode({
+  manifest = {
     apiVersion = "cert-manager.io/v1"
     kind       = "ClusterIssuer"
     metadata = {
@@ -34,15 +32,13 @@ resource "kubectl_manifest" "self_signed_issuer" {
     spec = {
       selfSigned = {}
     }
-  })
+  }
 }
 
-resource "kubectl_manifest" "cloudflare_issuer" {
+resource "kubernetes_manifest" "cloudflare_issuer" {
   count = var.type == "cloudflare" ? 1 : 0
 
-  validate_schema = false
-
-  yaml_body = yamlencode({
+  manifest = {
     apiVersion = "cert-manager.io/v1"
     kind       = "ClusterIssuer"
     metadata = {
@@ -71,5 +67,5 @@ resource "kubectl_manifest" "cloudflare_issuer" {
         ]
       }
     }
-  })
+  }
 }

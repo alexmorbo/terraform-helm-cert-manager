@@ -1,7 +1,7 @@
 variable "chart_version" {
   type = string
 
-  default = "1.16.1"
+  default = "1.17.2"
 }
 
 variable "cloudflare_accounts" {

@@ -48,7 +48,7 @@ locals {
 
 
 module "cert_manager" {
-  source = "github.com/terraform-iaac/terraform-kubernetes-cert-manager?ref=v2.6.4"
+  source = "github.com/terraform-iaac/terraform-kubernetes-cert-manager?ref=v2.6.5"
 
   namespace_name        = local.namespace
   chart_version         = var.chart_version

@@ -9,14 +9,15 @@ Terraform module for deploying cert-manager using Helm with configurable node se
 - Support for Cloudflare cluster issuers
 - Optional self-signed issuer
 - Configurable label keys for node selection
+- Creates Kubernetes namespace automatically
 
 ## External Module
 
 This module uses the `terraform-kubernetes-cert-manager` Terraform module:
 
 - **Module Source**: `github.com/terraform-iaac/terraform-kubernetes-cert-manager`
-- **Module Version**: `v2.6.4` (hardcoded in the module)
-- **Chart Version**: Configurable via `chart_version` variable (default: `1.16.1`)
+- **Module Version**: `v2.6.5` (hardcoded in the module)
+- **Chart Version**: Configurable via `chart_version` variable (default: `1.17.2`)
 - **Repository**: [terraform-kubernetes-cert-manager](https://github.com/terraform-iaac/terraform-kubernetes-cert-manager)
 
 The Terraform module internally deploys the official cert-manager Helm chart, allowing you to configure the chart version while the module version remains fixed.
@@ -27,7 +28,7 @@ The Terraform module internally deploys the official cert-manager Helm chart, al
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| `chart_version` | cert-manager Helm chart version | `string` | `"1.16.1"` | no |
+| `chart_version` | cert-manager Helm chart version | `string` | `"1.17.2"` | no |
 | `dedicated_nodes` | Whether to use dedicated nodes for cert-manager components | `bool` | `false` | no |
 | `dedicated_node_group` | Node group value for dedicated node selection | `string` | `"default"` | no |
 
@@ -54,7 +55,7 @@ The Terraform module internally deploys the official cert-manager Helm chart, al
 module "cert_manager" {
   source = "github.com/alexmorbo/terraform-helm-cert-manager"
 
-  chart_version = "1.16.1"
+  chart_version = "1.17.2"
 }
 ```
 
@@ -90,6 +91,16 @@ module "cert_manager" {
 }
 ```
 
+### With Self-Signed Issuer
+
+```hcl
+module "cert_manager" {
+  source = "github.com/alexmorbo/terraform-helm-cert-manager"
+
+  self_signed_issuer = true
+}
+```
+
 ## Outputs
 
 | Name | Description |
@@ -98,14 +109,30 @@ module "cert_manager" {
 
 ## Requirements
 
-- Terraform >= 1.0
+- Terraform >= 1.11.4
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| kubernetes | >= 2.0 |
+| kubernetes | >= 2.30.0 |
 | helm | >= 2.16.0, < 3.0 |
+
+## Architecture
+
+The module consists of:
+
+1. **Main Module**: Deploys cert-manager using the external Helm module
+2. **Cluster Issuer Submodule**: Creates Cloudflare or self-signed cluster issuers
+3. **Namespace Management**: Automatically creates the cert-manager namespace
+4. **Node Selection**: Configurable node selectors and tolerations for dedicated nodes
+
+### Node Selection Paths
+
+When `dedicated_nodes = true`, the module configures:
+
+- **Node Selectors**: `nodeSelector`, `webhook.nodeSelector`, `cainjector.nodeSelector`, `startupapicheck.nodeSelector`
+- **Tolerations**: `tolerations`, `webhook.tolerations`, `cainjector.tolerations`, `startupapicheck.tolerations`
 
 ## License
 
