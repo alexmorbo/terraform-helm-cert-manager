@@ -4,3 +4,7 @@ output "cluster_issuers" {
     { for k, v in module.self_signed_issuer : v.name => v.issuer },
   )
 }
+
+output "namespace" {
+  value = local.namespace
+}
